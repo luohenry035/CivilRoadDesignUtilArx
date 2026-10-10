@@ -32,7 +32,7 @@ LINK : fatal error LNK1104: cannot open file "License.lib"
 
 | 文件 | 改动 |
 |---|---|
-| `LicenseAll.h` | **新增**。补回缺失的授权库接口声明 + 实现（详见第二、三节） |
+| `LicenseAll.h` | **新增**。补回缺失的授权库接口声明 + 实现（详见第二、三节）。**文件内容为纯 ASCII 英文注释**（初版写成 GBK 中文，在 GitHub 上显示乱码，已更正；见第五节「源文件编码约定」） |
 | `ContourArx.cpp` | 补 `_hdllInstance` 的定义（原工程只有 `extern` 声明） |
 | `ContourArx.dsp` | ① 登记 `LicenseAll.h`；② 两条链接行去掉 `License.lib`、去掉 `/entry:"DllEntryPoint@12"`、`Libacge.lib`→`acge15.lib`、`Acgiapi.lib`→`acgiapi.lib`、补上 `acrx15.lib acdb15.lib acutil15.lib`、删掉指向不存在的 `LicenseKeyGenerator` 的 `/I` 与 `/libpath` |
 | `CoOrdMarker.cpp`<br>`DwgParamObj.cpp`<br>`HAlignment.cpp`<br>`NEAnnotationEntity.cpp`<br>`TINData.cpp`<br>`TINEntity.cpp`<br>`VAlignment.cpp` | 各 1 处：`ACRX_DXF_DEFINE_MEMBERS(` → `ACRX_DXF_DEFINE_MEMBERS5(` |
@@ -273,6 +273,39 @@ R15 的 ARX 是标准 MFC 扩展 DLL，入口就是 `DllMain` + 导出的 `acrxE
 | 中文路径/反斜杠被 Bash 改写（`E:\x` → `E:////x`） | 用 Python 脚本写文件（`chr(92)`），或 `MSYS_NO_PATHCONV=1`；`.exe` 调用前把路径转成 `/d/...` 形式 |
 | INCLUDE/LIB 里写了 `/` 分隔的路径 → `C1083: Cannot open include file: 'afxwin.h'` | VC6 的 INCLUDE/LIB **必须用 Windows 反斜杠 + 分号**；而调用 `cl.exe` 本身要用 MSYS 的 `/d/...` 形式。两者要分开准备 |
 | 编译器输出乱码 | VC6 输出是 GBK，用 `iconv -f GBK -t UTF-8` 转 |
+
+### 源文件编码约定（重要，容易踩坑）
+
+**结论：本工程所有参与编译的源文件一律用纯 ASCII；绝不要用「UTF-8 with BOM」。**
+
+实测三种编码喂给 VC6（12.00.8168，1998 年版）的结果：
+
+| 源文件编码 | VC6 编译 | 说明 |
+|---|---|---|
+| **UTF-8 with BOM** | **失败** | 报 `error C2018: unknown character '0xef'`（依次还有 `0xbb`/`0xbf`）。**VC6 不认识 BOM，会把它当代码字符。** |
+| UTF-8 无 BOM | 通过 | 但中文只出现在注释里才安全；一旦进入字符串字面量，运行期会显示乱码 |
+| GBK | 通过 | 中文 Windows 下正常，但 GitHub / VS Code 默认按 UTF-8 解析会显示乱码 |
+| **纯 ASCII** | 通过 | **本工程采用这一种**，任何编辑器与平台都不会乱码 |
+
+另外，**VC6 完全没有 `/source-charset` 之类的开关**（该选项是 VS2015+ 才有的），
+它根本没有"源文件编码"这个概念，只是把字节原样吞进去 —— 所以编码问题只能靠
+「统一写 ASCII」来从根上避免。
+
+本工程 184 个源文件中 181 个是纯 ASCII，所以 `LicenseAll.h` 也按纯 ASCII 编写
+（原先是 GBK，在 GitHub / VS Code / 预览窗口里显示为乱码，已改为英文注释）。
+编码敏感的文件现状：
+
+| 文件 | 编码 | 原因 |
+|---|---|---|
+| `LicenseAll.h` | 纯 ASCII | 参与编译；已在 GitHub 显示乱码，故改英文注释 |
+| `ContourArx.dsp` / `.def` / `.dsw` | 纯 ASCII | VC6 直接解析这些工程文件 |
+| `ContourArx.cpp` | GBK | 参与编译；沿用原始工程的 GBK 约定，中文 Windows 下正常 |
+| `build.sh` | UTF-8 | 不参与编译；shell 脚本，GitHub 按 UTF-8 渲染 |
+| `BUILD-移植说明.md` | UTF-8 | 不参与编译；Markdown 文档，GitHub 按 UTF-8 渲染 |
+
+> 若后续要新增/修改**参与编译**的源文件，请一律写纯 ASCII 注释，
+> 或至少确认 VC6 能编过（`sh build.sh` 会立刻暴露 `C2018`）。
+> 任何时候都不要给源文件加 UTF-8 BOM。
 
 ### 编译验证结果
 

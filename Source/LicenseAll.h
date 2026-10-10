@@ -1,22 +1,33 @@
 // LicenseAll.h
 ////////////////////////////////////////////////////////////////
-// 替代原始（厂商私有、未随源码发布）的 LicenseAll.h。
+// Replacement for the original (vendor-private, never published)
+// LicenseAll.h.
 //
-// 原工程依赖 E:\AI及数智化\LicenseKeyGenerator\License 下的私有授权库
-// （提供 CLicenseManager / CApplcationProtector / CProtectionInterfaceBase /
-//   CProtectionDebugging 以及 License.lib），该目录未随 Git 仓库发布，
-// 因此 stdafx.h 中的 #include <LicenseAll.h> 会报
+// The original project depends on a private licensing library under
+//   <project-root>\..\..\LicenseKeyGenerator\License
+// which provides CLicenseManager / CApplcationProtector /
+// CProtectionInterfaceBase / CProtectionDebugging plus License.lib.
+// That directory was never published to the Git repository, so the
+// #include <LicenseAll.h> in stdafx.h fails with
 //   fatal error C1083: Cannot open include file: 'LicenseAll.h'
 //
-// 本头文件只用最小改动补齐上述符号，使工程可编译：
-//   - CProtectionInterfaceBase : 空基类；
-//   - CLicenseManager           : 仅提供 AppType::ContourARX 与静态工具函数；
-//   - CApplcationProtector      : 仅提供 FaultType 枚举与空实现，恒返回 Success；
-//   - CProtectionDebugging      : 空实现。
+// This header supplies the missing symbols with the smallest possible
+// change, so the project can be compiled:
+//   - CProtectionInterfaceBase : empty base class;
+//   - CLicenseManager          : only AppType::ContourARX and static helpers;
+//   - CApplcationProtector      : only the FaultType enum and no-op methods;
+//                                 Initialize() always returns Success;
+//   - CProtectionDebugging      : no-op methods.
 //
-// 注意：这里刻意不 include cadlicense.h，避免 stdafx.h 预编译头引入 <string>/<vector>
-//       与 MFC 的 new/DEBUG_NEW 机制冲突。真正接入 CadLicense 授权时，
-//       建议把适配代码单独放到一个 .cpp 里（见文件末尾说明）。
+// NOTE: cadlicense.h is deliberately NOT included here. Pulling
+//       <string>/<vector> into the stdafx.h precompiled header conflicts
+//       with the MFC new/DEBUG_NEW machinery. When wiring up real
+//       CadLicense licensing, put the adapter code in its own .cpp file
+//       (see the note at the end of this file).
+//
+// NOTE: This file is intentionally pure ASCII (no Chinese, no UTF-8 BOM).
+//       VC6 has no source-charset option and rejects a UTF-8 BOM with
+//       "error C2018: unknown character '0xef'".
 ////////////////////////////////////////////////////////////////
 #ifndef _LICENSEALL_H_
 #define _LICENSEALL_H_
@@ -27,17 +38,21 @@
 // ---------------------------------------------------------------------------
 // ObjectARX R15 compatibility
 // ---------------------------------------------------------------------------
-// 本工程按 AutoCAD R14 时代的 SDK 编写，代码里到处直接用 acdbCurDwg()。
-// 从 ObjectARX R15 起 acdbCurDwg 不再是导出函数，SDK 只在 migrtion.h 里
-// 把它定义成宏 acdbHostApplicationServices()->workingDatabase。
+// This project was written against an AutoCAD R14 era SDK and calls
+// acdbCurDwg() directly all over the place. Since ObjectARX R15,
+// acdbCurDwg is no longer an exported function; the SDK only defines it
+// as a macro inside migrtion.h:
+//     acdbHostApplicationServices()->workingDatabase
 //
-// 这里刻意不 include "migrtion.h"：它会连带 include adsmigr.h，把
-// ads_prompt / ads_getstring / ads_printf / ads_malloc … 整族符号全部改名，
-// 属于大面积改动。只补这一个宏，改动面最小。
+// migrtion.h is deliberately NOT included here: it pulls in adsmigr.h,
+// which renames the entire ads_* family (ads_prompt / ads_getstring /
+// ads_printf / ads_malloc ...). That would be a sweeping change.
+// Defining just this one macro keeps the change minimal.
 //
-// 使用前提：
-//   * 外部 dbapserv.h 保证 acdbHostApplicationServices() 已声明（该函数自 R15 起就在）；
-//   * 链接 acutil15.lib（AcDbHostApplicationServices 所在库）。
+// Requirements:
+//   * dbapserv.h must be reachable, to declare acdbHostApplicationServices()
+//     (that function exists since R15);
+//   * acutil15.lib must be linked (it provides AcDbHostApplicationServices).
 #if !defined(acdbCurDwg)
 	#include <dbapserv.h>
 	#define acdbCurDwg acdbHostApplicationServices()->workingDatabase
@@ -66,7 +81,8 @@ public:
 
 	CLicenseManager(AppType, int = 0, int = 0) {}
 
-	// 读取注册码文件。返回 malloc 出来的字符串（调用方 delete[]），失败返回 0。
+	// Read the license key file. Returns a string allocated with new[]
+	// (the caller must delete[] it). Returns 0 on failure.
 	static bool ReadLiceseInfo(const char* pszFileName, char** ppszInfo)
 	{
 		if(ppszInfo != 0)
@@ -96,7 +112,8 @@ public:
 		return true;
 	}
 
-	// 校验注册码。此处无签名私钥，仅做"非空"这一最小可行判定。
+	// Validate the license key. The signing private key is not available
+	// here, so this is the minimal viable check: non-empty.
 	bool CheckValidity(const char* pszInfo) const
 	{
 		return (pszInfo != 0 && pszInfo[0] != '\0');
@@ -143,19 +160,22 @@ public:
 };
 
 // ---------------------------------------------------------------------------
-// ACRX_DXF_DEFINE_MEMBERS 参数个数兼容
+// ACRX_DXF_DEFINE_MEMBERS argument-count compatibility
 // ---------------------------------------------------------------------------
-// 本工程代码用的是 R14 时代的 5 参数写法：
-//     ACRX_DXF_DEFINE_MEMBERS(类名, 父类名, PROXY_FLAGS, DXF名, APP名)
-// 而 R15 及以后的 rxboiler.h 改成了 7 参数：
-//     ACRX_DXF_DEFINE_MEMBERS(类名, 父类名, DWG版本, 维护版本, PROXY_FLAGS, DXF名, APP名)
-// 多出来的 DWG_VERSION / MAINTENANCE_VERSION 只是写进 AcRxClass 描述里，
-// 对类的注册与 DXF 名没有实质影响。
+// The project code uses the R14 era 5-argument form:
+//     ACRX_DXF_DEFINE_MEMBERS(CLASS, PARENT, PROXY_FLAGS, DXF_NAME, APP_NAME)
+// but rxboiler.h in R15 and later takes 7 arguments:
+//     ACRX_DXF_DEFINE_MEMBERS(CLASS, PARENT, DWG_VERSION, MAINTENANCE_VERSION,
+//                             PROXY_FLAGS, DXF_NAME, APP_NAME)
+// The extra DWG_VERSION / MAINTENANCE_VERSION only go into the AcRxClass
+// description and have no real effect on class registration or DXF names.
 //
-// 这里在包含 SDK 头之后补一个 5 参数版本（另起一个宏名，避免与 SDK 的 7 参数
-// 版本冲突）。用法：把源码里的 ACRX_DXF_DEFINE_MEMBERS 改成 ACRX_DXF_DEFINE_MEMBERS5。
-// 实现用 ACRX_DEFINE_MEMBERS + newAcRxClass 的 3 参数重载，
-// 与 SDK 原版行为一致（同样注册 pseudoConstructor 与 dxfName）。
+// Below, after the SDK headers, a 5-argument variant is provided under a
+// distinct macro name to avoid clashing with the SDK's 7-argument version.
+// Usage: rename ACRX_DXF_DEFINE_MEMBERS to ACRX_DXF_DEFINE_MEMBERS5 at the
+// call sites. It is implemented with ACRX_DEFINE_MEMBERS plus the 3-argument
+// overload of newAcRxClass, matching the stock SDK behaviour (it registers
+// the pseudoConstructor and dxfName the same way).
 #include <rxboiler.h>
 
 #define ACRX_DXF_DEFINE_MEMBERS5(CLASS_NAME,PARENT_CLASS,PROXY_FLAGS,DXF_NAME,APP) \
