@@ -9,7 +9,7 @@
 #include "ImportPts.h"
 #include "TIN.h"
 
-ACRX_DXF_DEFINE_MEMBERS(CTINData, AcDbObject, 0, ContourData, Contour ARX Application);
+ACRX_DXF_DEFINE_MEMBERS5(CTINData, AcDbObject, 0, ContourData, Contour ARX Application);
 MAKE_ACDBOPENOBJECT_FUNCTION(CTINData);
 
 void CTINData::DeallocateTrgArray(CTrianglePtrArray& TrgArray)

@@ -27,7 +27,7 @@
 // *MUST* be all uppercase.
 //
 // ...
-ACRX_DXF_DEFINE_MEMBERS(CCoOrdMarker, AcDbEntity,
+ACRX_DXF_DEFINE_MEMBERS5(CCoOrdMarker, AcDbEntity,
 AcDbProxyEntity::kAllAllowedBits, CCoOrdMarker, 
 "Contour\
 |Product Desc: Contour ARX Application\

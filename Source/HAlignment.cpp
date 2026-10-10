@@ -32,7 +32,7 @@
 // *MUST* be all uppercase.
 //
 // ...
-ACRX_DXF_DEFINE_MEMBERS(CHAlignment, AcDbEntity,
+ACRX_DXF_DEFINE_MEMBERS5(CHAlignment, AcDbEntity,
 AcDbProxyEntity::kNoOperation, CHAlignment, 
 "Contour\
 |Product Desc: Contour ARX Application\

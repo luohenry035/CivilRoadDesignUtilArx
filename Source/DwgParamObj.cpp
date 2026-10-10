@@ -7,7 +7,7 @@
 #include "ContourApp.h"
 
 
-ACRX_DXF_DEFINE_MEMBERS(CDwgParamObj, AcDbObject, 0, ContourDwgParam, Contour ARX Application);
+ACRX_DXF_DEFINE_MEMBERS5(CDwgParamObj, AcDbObject, 0, ContourDwgParam, Contour ARX Application);
 MAKE_ACDBOPENOBJECT_FUNCTION(CDwgParamObj);
 
 CDwgParamObj::CDwgParamObj()

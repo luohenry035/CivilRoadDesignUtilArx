@@ -65,7 +65,7 @@ static void PrintPt3DArray(const AcGePoint3dArray& Array, const char* pszPmt, CS
 // *MUST* be all uppercase.
 //
 // ...
-ACRX_DXF_DEFINE_MEMBERS(TINEntity, AcDbEntity,
+ACRX_DXF_DEFINE_MEMBERS5(TINEntity, AcDbEntity,
 AcDbProxyEntity::kAllAllowedBits, TINEntity, 
 "Contour\
 |Product Desc:     Contour ARX Application\

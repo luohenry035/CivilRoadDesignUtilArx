@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 F90=df.exe
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FR /YX /c
-# ADD CPP /nologo /MD /W3 /Gi /GX /Od /I "GridControlSource\GridCtrl_src" /I "GridControlSource\NewCellTypes" /I "..\..\LicenseKeyGenerator\License" /D "NDEBUG" /D "RADPACK" /D "ACRXAPP" /D "STRICT" /D "WIN32" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Fr /Yu"stdafx.h" /FD /Gx /c
+# ADD CPP /nologo /MD /W3 /Gi /GX /Od /I "GridControlSource\GridCtrl_src" /I "GridControlSource\NewCellTypes" /D "NDEBUG" /D "RADPACK" /D "ACRXAPP" /D "STRICT" /D "WIN32" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Fr /Yu"stdafx.h" /FD /Gx /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x407 /d "NDEBUG"
@@ -52,7 +52,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 acad.lib rxapi.lib acedapi.lib Libacge.lib Acgiapi.lib License.lib /nologo /base:"0x1c000000" /entry:"DllEntryPoint@12" /subsystem:windows /dll /incremental:yes /machine:I386 /nodefaultlib:"libc.lib" /out:".\Release\ContourArx.arx" /libpath:"..\..\LicenseKeyGenerator\License\Release"
+# ADD LINK32 rxapi.lib acrx15.lib acdb15.lib acutil15.lib acge15.lib acgiapi.lib acad.lib acedapi.lib /nologo /base:"0x1c000000" /subsystem:windows /dll /incremental:yes /machine:I386 /nodefaultlib:"libc.lib" /out:".\Release\ContourArx.arx"
 
 !ELSEIF  "$(CFG)" == "ContourArx - Win32 Debug"
 
@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 F90=df.exe
 # ADD BASE CPP /nologo /MD /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR /YX /c
-# ADD CPP /nologo /MD /W4 /Gm /GX /Zi /I "..\..\LicenseKeyGenerator\License" /I "GridControlSource\GridCtrl_src" /I "GridControlSource\NewCellTypes" /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Fr /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W4 /Gm /GX /Zi /I "GridControlSource\GridCtrl_src" /I "GridControlSource\NewCellTypes" /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /Fr /Yu"stdafx.h" /FD /c
 # SUBTRACT CPP /X /u
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 acad.lib rxapi.lib acedapi.lib Libacge.lib Acgiapi.lib License.lib /nologo /base:"0x1c000000" /entry:"DllEntryPoint@12" /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"libc.lib" /out:".\Debug\ContourArx.arx" /libpath:"..\..\LicenseKeyGenerator\License\Debug"
+# ADD LINK32 rxapi.lib acrx15.lib acdb15.lib acutil15.lib acge15.lib acgiapi.lib acad.lib acedapi.lib /nologo /base:"0x1c000000" /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"libc.lib" /out:".\Debug\ContourArx.arx"
 # SUBTRACT LINK32 /map
 
 !ENDIF 
@@ -332,6 +332,7 @@ SOURCE=.\ContourApp.Cpp
 # Begin Source File
 
 SOURCE=.\ContourArx.cpp
+SOURCE=.\LicenseAll.h
 
 !IF  "$(CFG)" == "ContourArx - Win32 Release"
 

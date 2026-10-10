@@ -1,0 +1,47 @@
+## ---- VC6 / VS 工程中间产物 ----
+*.obj
+*.pch
+*.pdb
+*.ilk
+*.exp
+*.bsc
+*.sbr
+*.res
+*.idb
+*.ncb
+*.opt
+*.plg
+*.aps
+*.clw
+*.positions
+*.suo
+*.user
+
+## ---- 构建输出目录 ----
+Debug/
+Release/
+FullDebug/
+_build_obj/
+_link_obj/
+_link_out/
+Build/
+
+## ---- 最终产物 ----
+*.arx
+*.dll
+*.lib
+*.exe
+
+## ---- 系统 / 编辑器 ----
+Thumbs.db
+Desktop.ini
+.DS_Store
+*~
+*.bak
+*.tmp
+
+## ---- 注意 ----
+## 下列文件是工程正常编译所必需, 不要忽略:
+##   Source/LicenseAll.h     - 补回缺失的私有授权库头 (见 BUILD-移植说明.md)
+##   Source/ContourArx.def   - ARX 模块导出定义
+##   Source/build.sh         - 命令行一键构建脚本

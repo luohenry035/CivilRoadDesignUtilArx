@@ -45,7 +45,21 @@ static BOOL initApp  (void);
 static void unloadApp(void);
 
 // MFC support
-extern "C" HINSTANCE _hdllInstance;
+// 说明: 标准 MFC 扩展 DLL 模板要求 DLL 自己提供 _hdllInstance 的定义
+//      (它在本文件的 initApp()/unloadApp() 中被传给 InitModule()).
+//      原工程只有 extern 声明, 定义随未发布的 LicenseKeyGenerator 一起丢失,
+//      导致 LNK2001/LNK1120: unresolved external symbol __hdllInstance.
+//      这里补上定义, 并由 DllMain 在进程附加时写入本模块的真实句柄.
+//      注意: 显式写出 __stdcall 而不用 WINAPI 宏, 避免宏展开差异引起解析问题.
+extern "C" HINSTANCE _hdllInstance = NULL;
+
+extern "C" BOOL __stdcall DllMain(HINSTANCE hInstance, unsigned long dwReason, void* lpReserved)
+{
+	if (dwReason == 1 /*DLL_PROCESS_ATTACH*/)
+		_hdllInstance = hInstance;
+	return TRUE;
+}
+
 extern "C" HWND adsw_acadMainWnd();
 
 BOOL InitModule(HINSTANCE, DWORD, LPVOID);

@@ -28,7 +28,7 @@
 // *MUST* be all uppercase.
 //
 // ...
-ACRX_DXF_DEFINE_MEMBERS(NEAnnotationEntity, AcDbEntity,
+ACRX_DXF_DEFINE_MEMBERS5(NEAnnotationEntity, AcDbEntity,
 AcDbProxyEntity::kAllAllowedBits, NEAnnotationEntity, 
 "Contour\
 |Product Desc: Contour ARX Application\
